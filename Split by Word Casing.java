@@ -31,13 +31,13 @@ public class Main {
             for (int j = 0; j < charArray.length; j++) {
 
                 if (!Character.isUpperCase(charArray[j])) {
-                    lowerCaseBool = false;
+                    upperCaseBool = false;
                 }
             }
 
             for (int j = 0; j < charArray.length; j++) {
                 if (!Character.isLowerCase(charArray[j])) {
-                    upperCaseBool = false;
+                    lowerCaseBool = false;
                 }
             }
 
@@ -50,10 +50,12 @@ public class Main {
 
             if (isDigit ) {
                 mixedCase.add(value);
-            }else if (!lowerCaseBool) {
+            }else if (lowerCaseBool) {
                 lowerCase.add(value);
-            }else if (!upperCaseBool){
+            }else if (upperCaseBool){
                 upperCase.add(value);
+            }else {
+                mixedCase.add(value);
             }
 
         }
