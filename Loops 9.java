@@ -9,11 +9,11 @@ public class Main {
 
         double numOfNum = scanner.nextDouble();
 
-        double oddMax = -100000000000000.0;
+        double oddMax = Double.NEGATIVE_INFINITY;
         double oddMin = Double.MAX_VALUE;
         double oddSum = 0.0;
 
-        double evenMax = -100000000000000.0;
+        double evenMax = Double.NEGATIVE_INFINITY;
         double evenMin = Double.MAX_VALUE;
         double evenSum = 0.0;
 
@@ -53,7 +53,7 @@ public class Main {
         }else{
             System.out.println("OddMin: No");
         }
-        if(oddMax != -100000000000000.0){
+        if(oddMax != Double.NEGATIVE_INFINITY){
             System.out.println("OddMax: " + oddMax);
         }else{
             System.out.println("OddMax: No");
@@ -66,7 +66,7 @@ public class Main {
         }else{
             System.out.println("EvenMin: No");
         }
-        if(evenMax != -100000000000000.0){
+        if(evenMax != Double.NEGATIVE_INFINITY){
             System.out.println("EvenMax: " + evenMax);
         }else{
             System.out.println("EvenMax: No");
