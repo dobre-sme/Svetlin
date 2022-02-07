@@ -8,12 +8,17 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         int input = scanner.nextInt();
-        int result = (int) Math.sqrt(input);
+        int count = 0;
 
-        while (result * result == input) {
-            System.out.println("Not Prime");
-            return;
+        for (int i = 1; i <=input ; i++) {
+            if(input%i==0){
+                count++;
+            }
         }
-        System.out.println("Prime");
+        if(count==2){
+            System.out.println("Prime");
+        }else{
+            System.out.println("Not Prime");
+        }
     }
 }
