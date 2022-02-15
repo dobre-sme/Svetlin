@@ -11,7 +11,7 @@ public class Main {
         int d = Integer.parseInt(scanner.nextLine());
         int m = Integer.parseInt(scanner.nextLine());
 
-        LocalDate date = LocalDate.of(2020,d,m);
+        LocalDate date = LocalDate.of(2020,m,d);
         System.out.println(date.plusDays(5));
     }
 }
