@@ -22,5 +22,8 @@ public class Main {
                 }
             }
         }
+        if(count==0){
+            System.out.println("No");
+        }
     }
 }
