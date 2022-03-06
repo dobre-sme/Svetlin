@@ -1,3 +1,101 @@
+-- 01. Table Design
+
+--You have been tasked to create the tables in the database by the following models:
+--pictures
+--Column Name
+--Data Type
+--Constraints
+--id
+--Integer, from 1 to 2,147,483,647.
+--Primary Key
+--AUTO_INCREMENT
+--path
+--A string containing a maximum of 255 characters. Unicode is NOT needed.
+--NULL is NOT permitted.
+--size
+--Decimal, up to 10 digits, 2 of which after the decimal point.
+--NULL is NOT permitted.
+
+--users
+--Column Name
+--Data Type
+--Constraints
+--id
+----Integer, from 1 to 2,147,483,647.
+----Primary Key
+----AUTO_INCREMENT
+----username
+----A string containing a maximum of 30 characters. Unicode is NOT needed.
+----NULL is NOT permitted.
+----UNIQUE values.
+----password
+----A string containing a maximum of 30 characters. Unicode is NOT needed.
+----NULL is NOT permitted.
+----profile_picture_id
+----Integer, from 1 to 2,147,483,647.
+----Relationship with table pictures.
+
+
+--posts
+--Column Name
+--Data Type
+--Constraints
+--id
+--Integer, from 1 to 2,147,483,647.
+--Primary Key
+--AUTO_INCREMENT
+--caption
+--A string containing a maximum of 255 characters. Unicode is NOT needed.
+--NULL is NOT permitted.
+--user_id
+--Integer, from 1 to 2,147,483,647.
+--Relationship with table users.
+--NULL is NOT permitted.
+--picture_id
+--Integer, from 1 to 2,147,483,647.
+--Relationship with table pictures.
+--NULL is NOT permitted.
+
+--comments
+--Column Name
+--Data Type
+--Constraints
+--id
+--Integer, from 1 to 2,147,483,647.
+--Primary Key
+--AUTO_INCREMENT
+--content
+--A string containing a maximum of 255 characters. Unicode is NOT needed.
+--NULL is NOT permitted.
+--user_id
+--Integer, from 1 to 2,147,483,647.
+--Relationship with table users.
+--NULL is NOT permitted.
+--post_id
+--Integer, from 1 to 2,147,483,647.
+--Relationship with table posts.
+--NULL is NOT permitted.
+
+
+--users_followers
+--Column Name
+--Data Type
+--Constraints
+--user_id
+--Integer, from 1 to 2,147,483,647.
+--Relationship with table users.
+--follower_id
+--Integer, from 1 to 2,147,483,647.
+--Relationship with table users.
+
+
+--Submit your solutions in Judge on the first task. Submit all SQL table creation statements.
+--You will also be given a data.sql file. It will contain a dataset with random data which you will need to store in your local database. 
+--This data will be given to you so you will not have to think of data and lose essential time in the process. 
+--The data is in the form of INSERT statement queries. 
+
+
+
 CREATE DATABASE IF NOT EXISTS instagraph;
 
 USE instagraph;
@@ -317,6 +415,19 @@ VALUES
 (11, 19),
 (5, 14);
 
+
+---------------------------------
+--02. Data Insertion
+
+--You will have to INSERT records of data into the comments table, 
+--based on the posts table. For posts with id between 1 and 10, 
+--insert data in the comments table with the following values:
+
+--content – set it to “Omg!{name}!This is so cool!”. Where the name is the username of the user that posted the post.
+--user_id – MULTIPLY the id of the post by 3 and DIVIDE it by 2.
+--ROUND the resulting value UP.
+--post_id – the post’s id.
+
 INSERT INTO comments(post_id,content,user_id)
 SELECT p.id AS post_id , 
 CONCAT('Omg!',u.username,'!This is so cool!') AS content,
@@ -326,6 +437,13 @@ INNER JOIN users AS u
 ON p.user_id = u.id 
 WHERE p.id  BETWEEN 1 AND 10;
 
+---------------------------------
+--03. Data Update
+
+--UPDATE all users which do NOT have a profile picture. 
+--Set their profile picture id to the count of followers they have. 
+--If they have 0, set it to the user’s id.
+
 UPDATE users AS u
 SET profile_picture_id = (
 SELECT COUNT(uf.follower_id) AS c 
@@ -333,13 +451,36 @@ FROM users_followers AS uf
 WHERE uf.user_id = u.id)
 WHERE u.profile_picture_id IS NULL;
 
+----------------------------------
+--04. Data Deletion
+
+--Naturally, unpopular profiles are being treated as abandoned. 
+--DELETE all users which do NOT follow anyone and no one follows them.
+
 DELETE u FROM users AS u
 LEFT JOIN users_followers AS uf ON u.id = uf.user_id 
 WHERE uf.user_id IS NULL;
+----------------------------------
+--05. Users
+
+--Extract from the database, all of the users. 
+--ORDER the results ascending by user id.
+--Required Columns
+--id (users)
+--username
 
 SELECT u.id, u.username
 FROM users AS u
 ORDER BY u.id;
+----------------------------------
+--06. Cheaters
+
+--Apparently, there was a bug that allowed users to follow themselves. You need to track them.
+--Extract from the database, all of the users, which follow themselves. 
+--ORDER the results ascending by user id.
+--Required Columns
+--id (users)
+--username
 
 SELECT u.id,u.username
 FROM users as u
@@ -347,17 +488,46 @@ INNER JOIN users_followers As uf
 ON u.id = uf.user_id
 WHERE user_id = follower_id
 ORDER BY uf.user_id;
+------------------------------------
+--07. High Quality Pictures
+
+--High quality pictures have bigger size, naturally. 
+--Extract from the database, all of the pictures, which have size, GREATER than 50000, and their path contains “jpeg” or “png”.
+--ORDER the results descending by picture size.
+--Required Columns
+--id (pictures)
+--path
+--size
 
 SELECT id,path,size
 FROM pictures as p
 WHERE size > 50000.00 AND (path LIKE '%jpeg' OR path LIKE '%png%')
 ORDER BY p.size DESC;
+-------------------------------------
+--08. Comments and Users
+
+--Extract from the database, all of the comments, and the users that posted them, so that they end up in the following format:
+--{username} : {commentContent}
+--ORDER the results descending by comment id.
+--Required Columns
+--id (comments)
+--full_comment
 
 SELECT c.id,CONCAT(u.username,' : ',c.content) AS full_comment
 FROM comments as c
 INNER JOIN users as u
 WHERE u.id = c.user_id
 ORDER BY c.id DESC;
+--------------------------------------
+--09. Profile Pictures
+
+--Extract from the database, all of the users, which have the same profile picture.
+--Extract the size of the picture and add “KB” to the end of it.
+--ORDER the results ascending by user id.
+--Required Columns
+--id (users)
+--username
+--size (pictures)
 
 SELECT u.id,username,CONCAT(p.size,' KB') AS 'size' FROM users AS u
 INNER JOIN pictures AS p
@@ -367,6 +537,15 @@ IN (SELECT inneru.profile_picture_id
 FROM users AS inneru 
 WHERE inneru.id <> u.id)
 ORDER BY u.id;
+---------------------------------------
+--10. Spam Posts
+
+--Extract from the database, the top 5 posts, in terms of count of comments on them.
+--ORDER the results descending by comments (count of comments), and ascending by post id.
+--Required Columns
+--id (posts)
+--caption (posts)
+--comments (count of comments)
 
 SELECT p.id, p.caption, COUNT(c.id) AS 'comments'
 FROM posts AS p
@@ -374,6 +553,15 @@ JOIN comments AS c ON p.id = c.post_id
 GROUP BY p.id
 ORDER BY comments DESC , p.id
 LIMIT 5;
+---------------------------------------
+--11. Most Popular User
+
+--Extract from the database, the most popular user – the 1st in terms of count of followers.
+--Required Columns
+--id (users)
+--username
+--posts (count of posts)
+--followers (count of followers)
 
 SELECT cf.id, u.username, COUNT(p.id) AS posts, cf.followers
 FROM (
@@ -386,6 +574,15 @@ LEFT JOIN posts AS p ON cf.id = p.user_id
 GROUP BY cf.id
 ORDER BY followers DESC , u.id
 LIMIT 1;
+----------------------------------------
+--12. Commenting Myself
+--Extract from the database, for every user – the count of comments he has on his posts by himself.
+--In other words, extract for each user, the count of comments he has placed on his own posts.
+--ORDER the results descending by my_comments (count of comments), and ascending by user id.
+--Required Columns
+--id (users)
+--username
+--my_comments (count of comments)
 
 SELECT u.id,u.username,
 SUM(IF(c.user_id = u.id, 1, 0)) AS my_comments
@@ -394,6 +591,17 @@ LEFT JOIN posts AS p ON u.id = p.user_id
 LEFT JOIN comments AS c ON p.id = c.post_id
 GROUP BY u.id
 ORDER BY my_comments DESC , u.id;
+-----------------------------------------
+--13. User Top Posts
+
+--Extract from the database, the for every user – the post with the HIGHEST count of comments on it.
+--If the user has NO posts, IGNORE him.
+--If there are 2 posts at the top with the same count of comments, pick the one with the LOWER id.
+--ORDER the results ascending by user id.
+--Required Columns
+--id (users)
+--username
+--post (top post caption)
 
 SELECT u.id, u.username,p.caption
 FROM users AS u
@@ -403,6 +611,16 @@ INNER JOIN comments AS c
 ON p.id = c.post_id
 GROUP BY u.id
 ORDER BY u.id;
+-------------------------------------------
+--14. Posts and Commentators
+
+--Extract from the database, the for every post – the count of users that have comments on it.
+--NOTE: 1 user may have more than 1 comment on the post.
+--ORDER the results descending by users (count of users), and ascending by post id.
+--Required Columns
+--id (posts)
+--caption
+--users (count of users)
 
 SELECT p.id, p.caption, COUNT(c.user_id) AS users
 FROM posts AS p
@@ -410,6 +628,23 @@ LEFT JOIN comments AS c
 ON p.id = c.post_id
 GROUP BY p.id
 ORDER BY users DESC , p.id;
+--------------------------------------------
+--15. Post
+
+--Create a stored procedure udp_post which accepts the following parameters:
+
+--username
+--password
+--caption
+--path
+
+--And checks the following things:
+--If the password does NOT match the username in the users table:
+--Throw an exception with error code ‘45000’ and message ‘Password is incorrect!’.
+--If there is no picture with the given path in the pictures table:
+--Throw an exception with error code ‘45000’ and message ‘The picture does not exist!’.
+--If all checks pass, extract the id of the corresponding user, from the users table, 
+--then the picture id from the pictures table and INSERT a new post into the posts table with the extracted data.
 
 DROP PROCEDURE IF EXISTS udp_post;
 
@@ -435,11 +670,20 @@ BEGIN
              (SELECT p.id FROM pictures AS p WHERE p.path = path);
         COMMIT;
     END IF;
-END $$
-DELIMITER ;
+END 
+$$ DELIMITER ;
 
 CALL udp_post('UnderSinduxrein', '4l8nYGTKMW', '#new #procedure', 'src/folders/resources/images/story/reformatted/img/hRI3TW31rC.img');
+---------------------------------------------
+--16. Filter
 
+--Create a stored procedure udp_filter which accepts the following parameters:
+--hashtag
+
+--And extracts all posts that CONTAIN the given hashtag in their caption.
+--The procedure should extract the user’s username.
+--The hashtag will be given WITHOUT the ‘#’ sign.
+--The posts should be ordered ascending by post id.
 
 DROP PROCEDURE IF EXISTS udp_filter;
 
