@@ -359,7 +359,7 @@ INNER JOIN users as u
 WHERE u.id = c.user_id
 ORDER BY c.id DESC;
 
-SELECT u.id,username,p.size FROM users AS u
+SELECT u.id,username,CONCAT(p.size,' KB') AS 'size' FROM users AS u
 INNER JOIN pictures AS p
 ON p.id = u.profile_picture_id
 WHERE u.profile_picture_id 
