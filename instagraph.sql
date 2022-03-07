@@ -89,7 +89,6 @@
 --Relationship with table users.
 
 
---Submit your solutions in Judge on the first task. Submit all SQL table creation statements.
 --You will also be given a data.sql file. It will contain a dataset with random data which you will need to store in your local database. 
 --This data will be given to you so you will not have to think of data and lose essential time in the process. 
 --The data is in the form of INSERT statement queries. 
